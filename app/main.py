@@ -10,7 +10,7 @@ app = FastAPI(title="API de MathBoost")
 # Esto le dice a FastAPI: "Permite que cualquier frontend se conecte conmigo"
 
 origins = [
-    "frontend-proyecto-integrador-nine.vercel.app",  # URL de producción
+    "https://frontend-proyecto-integrador-nine.vercel.app",  # URL de producción
     "http://localhost:3000",          # Para seguir probando local
 ]
 app.add_middleware(
