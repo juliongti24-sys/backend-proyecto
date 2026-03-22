@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import os
 
-from app.api.v1 import auth, classes, users, challenges, students, trajectory, admin_students
+from app.api.v1 import auth, classes, users, challenges, students, trajectory, admin_students, courses, teachers
 
 app = FastAPI(title="API de MathBoost")
 
 # --- GUARDIA DE SEGURIDAD (CORS) ---
-# Esto le dice a FastAPI: "Permite que cualquier frontend se conecte conmigo"
+# Esto le dice a FastAPI: "Permite que el frontend se conecte conmigo"
 
 origins = [
     "https://frontend-proyecto-integrador-nine.vercel.app",  # URL de producción
@@ -21,8 +22,9 @@ app.add_middleware(
     allow_headers=["*"],      # Permite cualquier encabezado
 )
 
+
+
 # Montar carpeta uploads
-import os
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
@@ -34,3 +36,5 @@ app.include_router(challenges.router, tags=["Challenges"])
 app.include_router(students.router, tags=["Students"])
 app.include_router(trajectory.router, tags=["Trajectory"])
 app.include_router(admin_students.router, tags=["Admin - Students"])
+app.include_router(courses.router, tags=["Courses"])
+app.include_router(teachers.router, tags=["Teachers"])
