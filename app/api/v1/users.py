@@ -12,6 +12,8 @@ router = APIRouter()
 # Configuración para encriptar contraseñas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def get_password_hash(password):
+    if password and len(password) > 50:
+        password = password[:50]
     return pwd_context.hash(password)
 
 @router.get("/api/v1/users/{user_id}")

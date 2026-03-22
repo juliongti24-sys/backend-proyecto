@@ -84,7 +84,10 @@ async def register_teacher(teacher: TeacherCreate):
         )
 
     # 2. Encriptar la contraseña
-    hashed_password = pwd_context.hash(teacher.password)
+    pwd = teacher.password
+    if len(pwd) > 50:
+        pwd = pwd[:50]
+    hashed_password = pwd_context.hash(pwd)
 
     # 3. Preparar el documento para MongoDB
     teacher_dict = teacher.dict()

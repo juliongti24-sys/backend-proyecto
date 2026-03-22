@@ -1,0 +1,2 @@
+DEBUG: pwd='123456', type=<class 'str'>, len=6, chars=['1', '2', '3', '4', '5', '6']
+DEBUG: HASH FAILED! error=password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])

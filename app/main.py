@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.v1 import auth, classes, users, challenges
+from app.api.v1 import auth, classes, users, challenges, students, trajectory, admin_students
 
 app = FastAPI(title="API de MathBoost")
 
@@ -31,3 +31,6 @@ app.include_router(auth.router, tags=["Auth"])
 app.include_router(classes.router, tags=["Classes"])
 app.include_router(users.router, tags=["Users"])
 app.include_router(challenges.router, tags=["Challenges"])
+app.include_router(students.router, tags=["Students"])
+app.include_router(trajectory.router, tags=["Trajectory"])
+app.include_router(admin_students.router, tags=["Admin - Students"])

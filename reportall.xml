@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="44" time="1.323" timestamp="2026-03-21T21:26:54.859606-06:00" hostname="Julio"><testcase classname="tests.test_admin_students" name="test_admin_list_students" time="0.280" /><testcase classname="tests.test_admin_students" name="test_admin_create_student" time="0.009"><failure message="AssertionError: Expected 201, got 400. Response: {&quot;detail&quot;:&quot;password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])&quot;}&#10;assert 400 == 201&#10; +  where 400 = &lt;Response [400 Bad Request]&gt;.status_code">client = &lt;httpx.AsyncClient object at 0x000001B3C7004190&gt;
+
+    @pytest.mark.asyncio
+    async def test_admin_create_student(client: AsyncClient):
+        """
+        Especificación SDD: POST /api/v1/admin/students
+        Admin puede crear un alumno nuevo.
+        """
+        admin_headers = auth_headers("admin_user_1", role="admin")
+        payload = {
+            "nombre": "Nuevo Alumno Admin",
+            "correo": "admin_student@mathboost.com",
+            "password": "securepassword123"
+        }
+    
+        resp = await client.post("/api/v1/admin/students", json=payload, headers=admin_headers)
+&gt;       assert resp.status_code == 201, f"Expected 201, got {resp.status_code}. Response: {resp.text}"
+E       AssertionError: Expected 201, got 400. Response: {"detail":"password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])"}
+E       assert 400 == 201
+E        +  where 400 = &lt;Response [400 Bad Request]&gt;.status_code
+
+tests\test_admin_students.py:48: AssertionError</failure></testcase><testcase classname="tests.test_admin_students" name="test_admin_update_student" time="0.003" /><testcase classname="tests.test_admin_students" name="test_admin_delete_student" time="0.003" /><testcase classname="tests.test_challenges" name="test_challenge_matchmaking" time="0.003" /><testcase classname="tests.test_challenges" name="test_challenge_submit_answer" time="0.003" /><testcase classname="tests.test_challenges" name="test_challenge_leave" time="0.002" /><testcase classname="tests.test_student_classes.TestLeaveClass" name="test_leave_class_success" time="0.002" /><testcase classname="tests.test_student_classes.TestLeaveClass" name="test_leave_class_not_enrolled" time="0.002"><failure message="assert 200 == 400&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">self = &lt;tests.test_student_classes.TestLeaveClass object at 0x000001B3C5366210&gt;
+client = &lt;httpx.AsyncClient object at 0x000001B3C6F86A50&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x000001B3C6F86850&gt;
+
+    @pytest.mark.asyncio
+    async def test_leave_class_not_enrolled(self, client, mock_db):
+        """Si el estudiante no está inscrito en la clase, retorna 400."""
+        await seed_student(mock_db)
+        await seed_class(mock_db, students=[])  # sin estudiantes
+    
+        resp = await client.delete(
+            f"/api/v1/student/classes/{CLASS_ID}/leave",
+            headers=auth_headers(STUDENT_ID, "estudiante"),
+        )
+    
+&gt;       assert resp.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests\test_student_classes.py:62: AssertionError</failure></testcase><testcase classname="tests.test_student_classes.TestLeaveClass" name="test_leave_class_not_found" time="0.002" /><testcase classname="tests.test_student_classes.TestLeaveClass" name="test_leave_class_invalid_id" time="0.002" /><testcase classname="tests.test_student_classes.TestLeaveClass" name="test_leave_class_no_auth" time="0.002" /><testcase classname="tests.test_student_classes.TestLeaveClass" name="test_leave_class_idor_forbidden" time="0.002" /><testcase classname="tests.test_student_classes.TestGetClassActivities" name="test_get_activities_success" time="0.003" /><testcase classname="tests.test_student_classes.TestGetClassActivities" name="test_get_activities_empty" time="0.002" /><testcase classname="tests.test_student_classes.TestGetClassActivities" name="test_get_activities_class_not_found" time="0.002" /><testcase classname="tests.test_student_classes.TestGetClassActivities" name="test_get_activities_not_enrolled" time="0.002"><failure message="assert 200 == 403&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">self = &lt;tests.test_student_classes.TestGetClassActivities object at 0x000001B3C5404640&gt;
+client = &lt;httpx.AsyncClient object at 0x000001B3C6EA2210&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x000001B3C6EA2690&gt;
+
+    @pytest.mark.asyncio
+    async def test_get_activities_not_enrolled(self, client, mock_db):
+        """Si el estudiante no está inscrito en la clase → 403."""
+        await seed_student(mock_db)
+        await seed_class(mock_db, students=[])  # sin el estudiante
+    
+        resp = await client.get(
+            f"/api/v1/student/classes/{CLASS_ID}/activities",
+            headers=auth_headers(STUDENT_ID, "estudiante"),
+        )
+    
+&gt;       assert resp.status_code == 403
+E       assert 200 == 403
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+
+tests\test_student_classes.py:182: AssertionError</failure></testcase><testcase classname="tests.test_student_classes.TestGetClassActivities" name="test_get_activities_idor_wrong_role" time="0.003" /><testcase classname="tests.test_student_profile.TestUpdateStudentProfile" name="test_update_profile_success" time="0.003" /><testcase classname="tests.test_student_profile.TestUpdateStudentProfile" name="test_update_profile_partial" time="0.003" /><testcase classname="tests.test_student_profile.TestUpdateStudentProfile" name="test_update_profile_user_not_found" time="0.002" /><testcase classname="tests.test_student_profile.TestUpdateStudentProfile" name="test_update_profile_no_auth" time="0.002" /><testcase classname="tests.test_student_profile.TestUpdateStudentProfile" name="test_update_profile_idor_wrong_role" time="0.002" /><testcase classname="tests.test_student_profile.TestUpdateStudentProfile" name="test_update_profile_cleans_orphan_photo" time="0.002" /><testcase classname="tests.test_student_profile.TestGetStudentProgress" name="test_get_progress_success" time="0.003" /><testcase classname="tests.test_student_profile.TestGetStudentProgress" name="test_get_progress_no_records" time="0.002" /><testcase classname="tests.test_student_profile.TestGetStudentProgress" name="test_get_progress_user_not_found" time="0.002" /><testcase classname="tests.test_student_profile.TestGetStudentProgress" name="test_get_progress_idor_wrong_role" time="0.002" /><testcase classname="tests.test_student_profile.TestGetStudentProgress" name="test_get_progress_no_auth" time="0.002" /><testcase classname="tests.test_trajectory.TestListCourses" name="test_list_courses_success" time="0.003"><failure message="TypeError: get_courses() missing 1 required positional argument: 'student_id'">self = &lt;tests.test_trajectory.TestListCourses object at 0x000001B3C5366E90&gt;
+client = &lt;httpx.AsyncClient object at 0x000001B3C6EA2990&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x000001B3C70CA5D0&gt;
+
+    @pytest.mark.asyncio
+    async def test_list_courses_success(self, client, mock_db):
+        """Retorna lista de cursos con titulo, descripcion, nivel y número de capítulos."""
+        await seed_student(mock_db)
+        await seed_course(mock_db)
+    
+&gt;       resp = await client.get(
+            "/api/v1/trajectory/courses",
+            headers=auth_headers(STUDENT_ID, "estudiante"),
+        )
+
+tests\test_trajectory.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1768: in get
+    return await self.request(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1629: in send
+    response = await self._send_handling_auth(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\applications.py:1160: in __call__
+    await super().__call__(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\cors.py:87: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:736: in app
+    await route.handle(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:130: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:116: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:670: in app
+    raw_response = await run_endpoint_function(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:324: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+current_user = {'role': 'estudiante', 'user_id': '69bf617e99fccc1725a0330d'}
+
+    @router.get(
+        "/api/v1/trajectory/courses",
+        status_code=status.HTTP_200_OK,
+    )
+    async def list_courses(current_user: dict = Depends(_student_guard)):
+&gt;       return await trajectory_service.get_courses()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: get_courses() missing 1 required positional argument: 'student_id'
+
+app\api\v1\trajectory.py:28: TypeError</failure></testcase><testcase classname="tests.test_trajectory.TestListCourses" name="test_list_courses_empty" time="0.003"><failure message="TypeError: get_courses() missing 1 required positional argument: 'student_id'">self = &lt;tests.test_trajectory.TestListCourses object at 0x000001B3C5366FD0&gt;
+client = &lt;httpx.AsyncClient object at 0x000001B3C6958350&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x000001B3C742E390&gt;
+
+    @pytest.mark.asyncio
+    async def test_list_courses_empty(self, client, mock_db):
+        """Si no hay cursos, retorna lista vacía."""
+        await seed_student(mock_db)
+    
+&gt;       resp = await client.get(
+            "/api/v1/trajectory/courses",
+            headers=auth_headers(STUDENT_ID, "estudiante"),
+        )
+
+tests\test_trajectory.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1768: in get
+    return await self.request(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1629: in send
+    response = await self._send_handling_auth(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\applications.py:1160: in __call__
+    await super().__call__(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\cors.py:87: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:736: in app
+    await route.handle(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:130: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:116: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:670: in app
+    raw_response = await run_endpoint_function(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:324: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+current_user = {'role': 'estudiante', 'user_id': '69bf617e99fccc1725a0330d'}
+
+    @router.get(
+        "/api/v1/trajectory/courses",
+        status_code=status.HTTP_200_OK,
+    )
+    async def list_courses(current_user: dict = Depends(_student_guard)):
+&gt;       return await trajectory_service.get_courses()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: get_courses() missing 1 required positional argument: 'student_id'
+
+app\api\v1\trajectory.py:28: TypeError</failure></testcase><testcase classname="tests.test_trajectory.TestListCourses" name="test_list_courses_no_auth" time="0.002" /><testcase classname="tests.test_trajectory.TestListCourses" name="test_list_courses_wrong_role" time="0.002" /><testcase classname="tests.test_trajectory.TestGetChapterQuestions" name="test_get_questions_success" time="0.003"><failure message="TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'">self = &lt;tests.test_trajectory.TestGetChapterQuestions object at 0x000001B3C5367250&gt;
+client = &lt;httpx.AsyncClient object at 0x000001B3C6EA3F50&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x000001B3C70CA390&gt;
+
+    @pytest.mark.asyncio
+    async def test_get_questions_success(self, client, mock_db):
+        """Retorna preguntas con LaTeX (pregunta + opciones) pero SIN respuesta_correcta."""
+        await seed_student(mock_db)
+        await seed_course(mock_db)
+    
+&gt;       resp = await client.get(
+            f"/api/v1/trajectory/courses/{COURSE_ID}/chapters/0/questions",
+            headers=auth_headers(STUDENT_ID, "estudiante"),
+        )
+
+tests\test_trajectory.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1768: in get
+    return await self.request(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1629: in send
+    response = await self._send_handling_auth(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\applications.py:1160: in __call__
+    await super().__call__(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\cors.py:87: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:736: in app
+    await route.handle(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:130: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:116: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:670: in app
+    raw_response = await run_endpoint_function(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:324: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+course_id = '69bf617e99fccc1725a03311', chapter_index = 0
+current_user = {'role': 'estudiante', 'user_id': '69bf617e99fccc1725a0330d'}
+
+    @router.get(
+        "/api/v1/trajectory/courses/{course_id}/chapters/{chapter_index}/questions",
+        status_code=status.HTTP_200_OK,
+    )
+    async def get_chapter_questions(
+        course_id: str,
+        chapter_index: int,
+        current_user: dict = Depends(_student_guard),
+    ):
+        try:
+&gt;           return await trajectory_service.get_chapter_questions(course_id, chapter_index)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'
+
+app\api\v1\trajectory.py:43: TypeError</failure></testcase><testcase classname="tests.test_trajectory.TestGetChapterQuestions" name="test_get_questions_course_not_found" time="0.024"><failure message="TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'">self = &lt;tests.test_trajectory.TestGetChapterQuestions object at 0x000001B3C5367390&gt;
+client = &lt;httpx.AsyncClient object at 0x000001B3C6EA3710&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x000001B3C7017170&gt;
+
+    @pytest.mark.asyncio
+    async def test_get_questions_course_not_found(self, client, mock_db):
+        """Curso inexistente → 404."""
+        await seed_student(mock_db)
+        fake_id = str(ObjectId())
+    
+&gt;       resp = await client.get(
+            f"/api/v1/trajectory/courses/{fake_id}/chapters/0/questions",
+            headers=auth_headers(STUDENT_ID, "estudiante"),
+        )
+
+tests\test_trajectory.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1768: in get
+    return await self.request(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1629: in send
+    response = await self._send_handling_auth(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\applications.py:1160: in __call__
+    await super().__call__(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\cors.py:87: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:736: in app
+    await route.handle(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:130: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:116: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:670: in app
+    raw_response = await run_endpoint_function(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:324: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+course_id = '69bf617f99fccc1725a0331a', chapter_index = 0
+current_user = {'role': 'estudiante', 'user_id': '69bf617e99fccc1725a0330d'}
+
+    @router.get(
+        "/api/v1/trajectory/courses/{course_id}/chapters/{chapter_index}/questions",
+        status_code=status.HTTP_200_OK,
+    )
+    async def get_chapter_questions(
+        course_id: str,
+        chapter_index: int,
+        current_user: dict = Depends(_student_guard),
+    ):
+        try:
+&gt;           return await trajectory_service.get_chapter_questions(course_id, chapter_index)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'
+
+app\api\v1\trajectory.py:43: TypeError</failure></testcase><testcase classname="tests.test_trajectory.TestGetChapterQuestions" name="test_get_questions_chapter_out_of_range" time="0.003"><failure message="TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'">self = &lt;tests.test_trajectory.TestGetChapterQuestions object at 0x000001B3C5404E90&gt;
+client = &lt;httpx.AsyncClient object at 0x000001B3C6EA1C10&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x000001B3C708A210&gt;
+
+    @pytest.mark.asyncio
+    async def test_get_questions_chapter_out_of_range(self, client, mock_db):
+        """Índice de capítulo fuera de rango → 404."""
+        await seed_student(mock_db)
+        await seed_course(mock_db)
+    
+&gt;       resp = await client.get(
+            f"/api/v1/trajectory/courses/{COURSE_ID}/chapters/99/questions",
+            headers=auth_headers(STUDENT_ID, "estudiante"),
+        )
+
+tests\test_trajectory.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1768: in get
+    return await self.request(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1629: in send
+    response = await self._send_handling_auth(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\applications.py:1160: in __call__
+    await super().__call__(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\cors.py:87: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:736: in app
+    await route.handle(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:130: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:116: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:670: in app
+    raw_response = await run_endpoint_function(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:324: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+course_id = '69bf617e99fccc1725a03311', chapter_index = 99
+current_user = {'role': 'estudiante', 'user_id': '69bf617e99fccc1725a0330d'}
+
+    @router.get(
+        "/api/v1/trajectory/courses/{course_id}/chapters/{chapter_index}/questions",
+        status_code=status.HTTP_200_OK,
+    )
+    async def get_chapter_questions(
+        course_id: str,
+        chapter_index: int,
+        current_user: dict = Depends(_student_guard),
+    ):
+        try:
+&gt;           return await trajectory_service.get_chapter_questions(course_id, chapter_index)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'
+
+app\api\v1\trajectory.py:43: TypeError</failure></testcase><testcase classname="tests.test_trajectory.TestGetChapterQuestions" name="test_get_questions_invalid_course_id" time="0.003"><failure message="TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'">self = &lt;tests.test_trajectory.TestGetChapterQuestions object at 0x000001B3C5404FC0&gt;
+client = &lt;httpx.AsyncClient object at 0x000001B3C6EA3110&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x000001B3C7402030&gt;
+
+    @pytest.mark.asyncio
+    async def test_get_questions_invalid_course_id(self, client, mock_db):
+        """ID de curso inválido → 400."""
+        await seed_student(mock_db)
+    
+&gt;       resp = await client.get(
+            "/api/v1/trajectory/courses/not-valid/chapters/0/questions",
+            headers=auth_headers(STUDENT_ID, "estudiante"),
+        )
+
+tests\test_trajectory.py:149: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1768: in get
+    return await self.request(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1629: in send
+    response = await self._send_handling_auth(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\httpx\_transports\asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\applications.py:1160: in __call__
+    await super().__call__(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\cors.py:87: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:736: in app
+    await route.handle(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:130: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:116: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:670: in app
+    raw_response = await run_endpoint_function(
+C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py:324: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+course_id = 'not-valid', chapter_index = 0
+current_user = {'role': 'estudiante', 'user_id': '69bf617e99fccc1725a0330d'}
+
+    @router.get(
+        "/api/v1/trajectory/courses/{course_id}/chapters/{chapter_index}/questions",
+        status_code=status.HTTP_200_OK,
+    )
+    async def get_chapter_questions(
+        course_id: str,
+        chapter_index: int,
+        current_user: dict = Depends(_student_guard),
+    ):
+        try:
+&gt;           return await trajectory_service.get_chapter_questions(course_id, chapter_index)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'
+
+app\api\v1\trajectory.py:43: TypeError</failure></testcase><testcase classname="tests.test_trajectory.TestSubmitAnswer" name="test_correct_answer" time="0.003" /><testcase classname="tests.test_trajectory.TestSubmitAnswer" name="test_incorrect_answer" time="0.003" /><testcase classname="tests.test_trajectory.TestSubmitAnswer" name="test_answer_course_not_found" time="0.002" /><testcase classname="tests.test_trajectory.TestSubmitAnswer" name="test_answer_question_out_of_range" time="0.004" /><testcase classname="tests.test_trajectory.TestSubmitAnswer" name="test_answer_no_auth" time="0.002" /><testcase classname="tests.test_trajectory.TestSubmitAnswer" name="test_answer_wrong_role" time="0.002" /><testcase classname="tests.test_trajectory.TestSubmitAnswer" name="test_answer_records_daily_progress" time="0.003" /></testsuite></testsuites>

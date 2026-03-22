@@ -1,0 +1,47 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 4 items
+
+tests\test_admin_students.py  Conectando a la base de datos MongoDB Atlas (credenciales seguras)...
+.DEBUG: PWD TYPE: <class 'str'>, PWD VAL: 'securepassword123', LENGTH: 17
+F..
+
+================================== FAILURES ===================================
+__________________________ test_admin_create_student __________________________
+
+client = <httpx.AsyncClient object at 0x000001C078BD5310>
+
+    @pytest.mark.asyncio
+    async def test_admin_create_student(client: AsyncClient):
+        """
+        Especificación SDD: POST /api/v1/admin/students
+        Admin puede crear un alumno nuevo.
+        """
+        admin_headers = auth_headers("admin_user_1", role="admin")
+        payload = {
+            "nombre": "Nuevo Alumno Admin",
+            "correo": "admin_student@mathboost.com",
+            "password": "securepassword123"
+        }
+    
+        resp = await client.post("/api/v1/admin/students", json=payload, headers=admin_headers)
+>       assert resp.status_code == 201, f"Expected 201, got {resp.status_code}. Response: {resp.text}"
+E       AssertionError: Expected 201, got 400. Response: {"detail":"password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])"}
+E       assert 400 == 201
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+
+tests\test_admin_students.py:48: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  passlib.handlers.bcrypt:bcrypt.py:622 (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "C:\Users\52414\AppData\Local\Programs\Python\Python314\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+=========================== short test summary info ===========================
+FAILED tests/test_admin_students.py::test_admin_create_student - AssertionErr...
+========================= 1 failed, 3 passed in 0.32s =========================

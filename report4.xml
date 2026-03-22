@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="4" time="0.348" timestamp="2026-03-21T21:19:22.491463-06:00" hostname="Julio"><testcase classname="tests.test_admin_students" name="test_admin_list_students" time="0.250" /><testcase classname="tests.test_admin_students" name="test_admin_create_student" time="0.009"><failure message="AssertionError: Expected 201, got 400. Response: {&quot;detail&quot;:&quot;password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])&quot;}&#10;assert 400 == 201&#10; +  where 400 = &lt;Response [400 Bad Request]&gt;.status_code">client = &lt;httpx.AsyncClient object at 0x0000020220C62350&gt;
+
+    @pytest.mark.asyncio
+    async def test_admin_create_student(client: AsyncClient):
+        """
+        Especificación SDD: POST /api/v1/admin/students
+        Admin puede crear un alumno nuevo.
+        """
+        admin_headers = auth_headers("admin_user_1", role="admin")
+        payload = {
+            "nombre": "Nuevo Alumno Admin",
+            "correo": "admin_student@mathboost.com",
+            "password": "securepassword123"
+        }
+    
+        resp = await client.post("/api/v1/admin/students", json=payload, headers=admin_headers)
+&gt;       assert resp.status_code == 201, f"Expected 201, got {resp.status_code}. Response: {resp.text}"
+E       AssertionError: Expected 201, got 400. Response: {"detail":"password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])"}
+E       assert 400 == 201
+E        +  where 400 = &lt;Response [400 Bad Request]&gt;.status_code
+
+tests\test_admin_students.py:48: AssertionError</failure></testcase><testcase classname="tests.test_admin_students" name="test_admin_update_student" time="0.003"><failure message="AssertionError: Expected 200, got 404. Response: {&quot;detail&quot;:&quot;Estudiante no encontrado&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404 Not Found]&gt;.status_code">client = &lt;httpx.AsyncClient object at 0x0000020220C63B10&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x0000020220C63890&gt;
+
+    @pytest.mark.asyncio
+    async def test_admin_update_student(client: AsyncClient, mock_db):
+        """
+        Especificación SDD: PUT /api/v1/admin/students/{student_id}
+        Admin puede modificar el perfil de un alumno.
+        """
+        from .conftest import seed_student
+        student = await seed_student(mock_db)
+        admin_headers = auth_headers("admin_user_1", role="admin")
+        student_id = str(student["_id"])
+    
+        payload = {
+            "nombre": "Estudiante Actualizado por Admin",
+        }
+    
+        resp = await client.put(f"/api/v1/admin/students/{student_id}", json=payload, headers=admin_headers)
+&gt;       assert resp.status_code == 200, f"Expected 200, got {resp.status_code}. Response: {resp.text}"
+E       AssertionError: Expected 200, got 404. Response: {"detail":"Estudiante no encontrado"}
+E       assert 404 == 200
+E        +  where 404 = &lt;Response [404 Not Found]&gt;.status_code
+
+tests\test_admin_students.py:69: AssertionError</failure></testcase><testcase classname="tests.test_admin_students" name="test_admin_delete_student" time="0.003"><failure message="AssertionError: Expected 200, got 404. Response: {&quot;detail&quot;:&quot;Estudiante no encontrado&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404 Not Found]&gt;.status_code">client = &lt;httpx.AsyncClient object at 0x0000020220C8E190&gt;
+mock_db = &lt;motor.motor_asyncio.AsyncIOMotorDatabase object at 0x0000020220C8DF30&gt;
+
+    @pytest.mark.asyncio
+    async def test_admin_delete_student(client: AsyncClient, mock_db):
+        """
+        Especificación SDD: DELETE /api/v1/admin/students/{student_id}
+        Admin puede eliminar a un alumno.
+        """
+        from .conftest import seed_student
+        student = await seed_student(mock_db)
+        admin_headers = auth_headers("admin_user_1", role="admin")
+        student_id = str(student["_id"])
+    
+        resp = await client.delete(f"/api/v1/admin/students/{student_id}", headers=admin_headers)
+&gt;       assert resp.status_code == 200, f"Expected 200, got {resp.status_code}. Response: {resp.text}"
+E       AssertionError: Expected 200, got 404. Response: {"detail":"Estudiante no encontrado"}
+E       assert 404 == 200
+E        +  where 404 = &lt;Response [404 Not Found]&gt;.status_code
+
+tests\test_admin_students.py:87: AssertionError</failure></testcase></testsuite></testsuites>

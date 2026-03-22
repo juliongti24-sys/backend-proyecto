@@ -1,0 +1,79 @@
+ERROR: test_admin_list_students - failed on setup with "file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 7
+  @pytest.mark.asyncio
+  async def test_admin_list_students(client: AsyncClient, seed_student, seed_teacher):
+      """
+      Especificación SDD: GET /api/v1/admin/students
+      - Escenario exitoso: un usuario admin obtiene la lista de estudiantes.
+      - Seguridad: estudiantes o maestros reciben 403.
+      """
+      # 1. Admin accede
+      admin_headers = auth_headers("admin_user_1", role="admin")
+      resp_admin = await client.get("/api/v1/admin/students", headers=admin_headers)
+      assert resp_admin.status_code == 200, "Admin debe poder listar alumnos"
+      data = resp_admin.json()
+      assert isinstance(data, list)
+
+      # 2. RBAC: Estudiante no puede acceder
+      student_headers = auth_headers(seed_student["_id"], role="estudiante")
+      resp_student = await client.get("/api/v1/admin/students", headers=student_headers)
+      assert resp_student.status_code == 403, "Estudiantes deben recibir 403 Forbidden"
+
+      # 3. RBAC: Maestro no puede acceder
+      teacher_headers = auth_headers(seed_teacher["_id"], role="maestro")
+      resp_teacher = await client.get("/api/v1/admin/students", headers=teacher_headers)
+      assert resp_teacher.status_code == 403, "Maestros deben recibir 403 Forbidden"
+E       fixture 'seed_student' not found
+>       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:7"
+FAILED: test_admin_create_student - assert 400 == 201
+ +  where 400 = <Response [400 Bad Request]>.status_code
+ERROR: test_admin_update_student - failed on setup with "file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 51
+  @pytest.mark.asyncio
+  async def test_admin_update_student(client: AsyncClient, seed_student):
+      """
+      Especificación SDD: PUT /api/v1/admin/students/{student_id}
+      Admin puede modificar el perfil de un alumno.
+      """
+      admin_headers = auth_headers("admin_user_1", role="admin")
+      student_id = seed_student["_id"]
+
+      payload = {
+          "nombre": "Estudiante Actualizado por Admin",
+      }
+
+      resp = await client.put(f"/api/v1/admin/students/{student_id}", json=payload, headers=admin_headers)
+      assert resp.status_code == 200
+      data = resp.json()
+      assert data["nombre"] == payload["nombre"]
+E       fixture 'seed_student' not found
+>       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:51"
+ERROR: test_admin_delete_student - failed on setup with "file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 70
+  @pytest.mark.asyncio
+  async def test_admin_delete_student(client: AsyncClient, seed_student):
+      """
+      Especificación SDD: DELETE /api/v1/admin/students/{student_id}
+      Admin puede eliminar a un alumno.
+      """
+      admin_headers = auth_headers("admin_user_1", role="admin")
+      student_id = seed_student["_id"]
+
+      resp = await client.delete(f"/api/v1/admin/students/{student_id}", headers=admin_headers)
+      assert resp.status_code == 200
+      assert resp.json()["message"] == "Estudiante eliminado exitosamente"
+
+      # Verificar que ya no existe (un GET no autorizado o directamente a la base de mock si fuera posible;
+      # pero a nivel API confirmamos el 200)
+
+      # Si volvemos a intentar eliminar el mismo estudiante, debería ser 404
+      resp_retry = await client.delete(f"/api/v1/admin/students/{student_id}", headers=admin_headers)
+      assert resp_retry.status_code == 404
+E       fixture 'seed_student' not found
+>       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:70"

@@ -1,0 +1,3 @@
+FAIL: test_admin_create_student | assert 400 == 201
+FAIL: test_admin_update_student | assert 404 == 200
+FAIL: test_admin_delete_student | assert 404 == 200

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="3" failures="1" skipped="0" tests="4" time="0.329" timestamp="2026-03-21T21:09:40.227587-06:00" hostname="Julio"><testcase classname="tests.test_admin_students" name="test_admin_list_students" time="0.242"><error message="failed on setup with &quot;file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 7&#10;  @pytest.mark.asyncio&#10;  async def test_admin_list_students(client: AsyncClient, seed_student, seed_teacher):&#10;      &quot;&quot;&quot;&#10;      Especificación SDD: GET /api/v1/admin/students&#10;      - Escenario exitoso: un usuario admin obtiene la lista de estudiantes.&#10;      - Seguridad: estudiantes o maestros reciben 403.&#10;      &quot;&quot;&quot;&#10;      # 1. Admin accede&#10;      admin_headers = auth_headers(&quot;admin_user_1&quot;, role=&quot;admin&quot;)&#10;      resp_admin = await client.get(&quot;/api/v1/admin/students&quot;, headers=admin_headers)&#10;      assert resp_admin.status_code == 200, &quot;Admin debe poder listar alumnos&quot;&#10;      data = resp_admin.json()&#10;      assert isinstance(data, list)&#10;&#10;      # 2. RBAC: Estudiante no puede acceder&#10;      student_headers = auth_headers(seed_student[&quot;_id&quot;], role=&quot;estudiante&quot;)&#10;      resp_student = await client.get(&quot;/api/v1/admin/students&quot;, headers=student_headers)&#10;      assert resp_student.status_code == 403, &quot;Estudiantes deben recibir 403 Forbidden&quot;&#10;&#10;      # 3. RBAC: Maestro no puede acceder&#10;      teacher_headers = auth_headers(seed_teacher[&quot;_id&quot;], role=&quot;maestro&quot;)&#10;      resp_teacher = await client.get(&quot;/api/v1/admin/students&quot;, headers=teacher_headers)&#10;      assert resp_teacher.status_code == 403, &quot;Maestros deben recibir 403 Forbidden&quot;&#10;E       fixture 'seed_student' not found&#10;&gt;       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory&#10;&gt;       use 'pytest --fixtures [testpath]' for help on them.&#10;&#10;C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:7&quot;">file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 7
+  @pytest.mark.asyncio
+  async def test_admin_list_students(client: AsyncClient, seed_student, seed_teacher):
+      """
+      Especificación SDD: GET /api/v1/admin/students
+      - Escenario exitoso: un usuario admin obtiene la lista de estudiantes.
+      - Seguridad: estudiantes o maestros reciben 403.
+      """
+      # 1. Admin accede
+      admin_headers = auth_headers("admin_user_1", role="admin")
+      resp_admin = await client.get("/api/v1/admin/students", headers=admin_headers)
+      assert resp_admin.status_code == 200, "Admin debe poder listar alumnos"
+      data = resp_admin.json()
+      assert isinstance(data, list)
+
+      # 2. RBAC: Estudiante no puede acceder
+      student_headers = auth_headers(seed_student["_id"], role="estudiante")
+      resp_student = await client.get("/api/v1/admin/students", headers=student_headers)
+      assert resp_student.status_code == 403, "Estudiantes deben recibir 403 Forbidden"
+
+      # 3. RBAC: Maestro no puede acceder
+      teacher_headers = auth_headers(seed_teacher["_id"], role="maestro")
+      resp_teacher = await client.get("/api/v1/admin/students", headers=teacher_headers)
+      assert resp_teacher.status_code == 403, "Maestros deben recibir 403 Forbidden"
+E       fixture 'seed_student' not found
+&gt;       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+&gt;       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:7</error></testcase><testcase classname="tests.test_admin_students" name="test_admin_create_student" time="0.009"><failure message="assert 400 == 201&#10; +  where 400 = &lt;Response [400 Bad Request]&gt;.status_code">client = &lt;httpx.AsyncClient object at 0x000002725D7AD090&gt;
+
+    @pytest.mark.asyncio
+    async def test_admin_create_student(client: AsyncClient):
+        """
+        Especificación SDD: POST /api/v1/admin/students
+        Admin puede crear un alumno nuevo.
+        """
+        admin_headers = auth_headers("admin_user_1", role="admin")
+        payload = {
+            "nombre": "Nuevo Alumno Admin",
+            "correo": "admin_student@mathboost.com",
+            "password": "securepassword123"
+        }
+    
+        resp = await client.post("/api/v1/admin/students", json=payload, headers=admin_headers)
+&gt;       assert resp.status_code == 201
+E       assert 400 == 201
+E        +  where 400 = &lt;Response [400 Bad Request]&gt;.status_code
+
+tests\test_admin_students.py:46: AssertionError</failure></testcase><testcase classname="tests.test_admin_students" name="test_admin_update_student" time="0.001"><error message="failed on setup with &quot;file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 51&#10;  @pytest.mark.asyncio&#10;  async def test_admin_update_student(client: AsyncClient, seed_student):&#10;      &quot;&quot;&quot;&#10;      Especificación SDD: PUT /api/v1/admin/students/{student_id}&#10;      Admin puede modificar el perfil de un alumno.&#10;      &quot;&quot;&quot;&#10;      admin_headers = auth_headers(&quot;admin_user_1&quot;, role=&quot;admin&quot;)&#10;      student_id = seed_student[&quot;_id&quot;]&#10;&#10;      payload = {&#10;          &quot;nombre&quot;: &quot;Estudiante Actualizado por Admin&quot;,&#10;      }&#10;&#10;      resp = await client.put(f&quot;/api/v1/admin/students/{student_id}&quot;, json=payload, headers=admin_headers)&#10;      assert resp.status_code == 200&#10;      data = resp.json()&#10;      assert data[&quot;nombre&quot;] == payload[&quot;nombre&quot;]&#10;E       fixture 'seed_student' not found&#10;&gt;       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory&#10;&gt;       use 'pytest --fixtures [testpath]' for help on them.&#10;&#10;C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:51&quot;">file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 51
+  @pytest.mark.asyncio
+  async def test_admin_update_student(client: AsyncClient, seed_student):
+      """
+      Especificación SDD: PUT /api/v1/admin/students/{student_id}
+      Admin puede modificar el perfil de un alumno.
+      """
+      admin_headers = auth_headers("admin_user_1", role="admin")
+      student_id = seed_student["_id"]
+
+      payload = {
+          "nombre": "Estudiante Actualizado por Admin",
+      }
+
+      resp = await client.put(f"/api/v1/admin/students/{student_id}", json=payload, headers=admin_headers)
+      assert resp.status_code == 200
+      data = resp.json()
+      assert data["nombre"] == payload["nombre"]
+E       fixture 'seed_student' not found
+&gt;       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+&gt;       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:51</error></testcase><testcase classname="tests.test_admin_students" name="test_admin_delete_student" time="0.001"><error message="failed on setup with &quot;file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 70&#10;  @pytest.mark.asyncio&#10;  async def test_admin_delete_student(client: AsyncClient, seed_student):&#10;      &quot;&quot;&quot;&#10;      Especificación SDD: DELETE /api/v1/admin/students/{student_id}&#10;      Admin puede eliminar a un alumno.&#10;      &quot;&quot;&quot;&#10;      admin_headers = auth_headers(&quot;admin_user_1&quot;, role=&quot;admin&quot;)&#10;      student_id = seed_student[&quot;_id&quot;]&#10;&#10;      resp = await client.delete(f&quot;/api/v1/admin/students/{student_id}&quot;, headers=admin_headers)&#10;      assert resp.status_code == 200&#10;      assert resp.json()[&quot;message&quot;] == &quot;Estudiante eliminado exitosamente&quot;&#10;&#10;      # Verificar que ya no existe (un GET no autorizado o directamente a la base de mock si fuera posible;&#10;      # pero a nivel API confirmamos el 200)&#10;&#10;      # Si volvemos a intentar eliminar el mismo estudiante, debería ser 404&#10;      resp_retry = await client.delete(f&quot;/api/v1/admin/students/{student_id}&quot;, headers=admin_headers)&#10;      assert resp_retry.status_code == 404&#10;E       fixture 'seed_student' not found&#10;&gt;       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory&#10;&gt;       use 'pytest --fixtures [testpath]' for help on them.&#10;&#10;C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:70&quot;">file C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py, line 70
+  @pytest.mark.asyncio
+  async def test_admin_delete_student(client: AsyncClient, seed_student):
+      """
+      Especificación SDD: DELETE /api/v1/admin/students/{student_id}
+      Admin puede eliminar a un alumno.
+      """
+      admin_headers = auth_headers("admin_user_1", role="admin")
+      student_id = seed_student["_id"]
+
+      resp = await client.delete(f"/api/v1/admin/students/{student_id}", headers=admin_headers)
+      assert resp.status_code == 200
+      assert resp.json()["message"] == "Estudiante eliminado exitosamente"
+
+      # Verificar que ya no existe (un GET no autorizado o directamente a la base de mock si fuera posible;
+      # pero a nivel API confirmamos el 200)
+
+      # Si volvemos a intentar eliminar el mismo estudiante, debería ser 404
+      resp_retry = await client.delete(f"/api/v1/admin/students/{student_id}", headers=admin_headers)
+      assert resp_retry.status_code == 404
+E       fixture 'seed_student' not found
+&gt;       available fixtures: _class_scoped_runner, _function_scoped_runner, _module_scoped_runner, _package_scoped_runner, _session_scoped_runner, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, client, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_db, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+&gt;       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\52414\Documents\class\Quinto_Cuatrimestre\MathBoost\backend\tests\test_admin_students.py:70</error></testcase></testsuite></testsuites>

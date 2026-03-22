@@ -1,0 +1,9 @@
+FAIL: test_admin_create_student | AssertionError: Expected 201, got 400. Response: {"detail":"password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])"}
+FAIL: test_leave_class_not_enrolled | assert 200 == 400
+FAIL: test_get_activities_not_enrolled | assert 200 == 403
+FAIL: test_list_courses_success | TypeError: get_courses() missing 1 required positional argument: 'student_id'
+FAIL: test_list_courses_empty | TypeError: get_courses() missing 1 required positional argument: 'student_id'
+FAIL: test_get_questions_success | TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'
+FAIL: test_get_questions_course_not_found | TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'
+FAIL: test_get_questions_chapter_out_of_range | TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'
+FAIL: test_get_questions_invalid_course_id | TypeError: get_chapter_questions() missing 1 required positional argument: 'chapter_index'
