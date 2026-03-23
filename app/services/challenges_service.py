@@ -6,6 +6,7 @@ import uuid
 import random
 from typing import Dict, Any, Optional
 from app import database
+from bson import ObjectId
 
 # Estado en memoria
 waiting_queue: list = []  # IDs de estudiantes en espera
@@ -22,7 +23,7 @@ async def _get_random_exercises(count: int = 5) -> list:
     results = await cursor.to_list(length=count)
     return [r["ejercicio"] for r in results]
 
-async def enter_queue(student_id: str) -> Dict[str, Any]:
+async def enter_queue(student_id: str, room_code: str = None) -> Dict[str, Any]:
     global waiting_queue, active_matches
     
     # Si ya está en una partida activa

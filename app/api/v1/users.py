@@ -16,7 +16,7 @@ def get_password_hash(password):
         password = password[:50]
     return pwd_context.hash(password)
 
-@router.get("/api/v1/users/{user_id}")
+@router.get("/{user_id}")
 async def get_user_profile(user_id: str):
     try:
         obj_id = ObjectId(user_id)
@@ -35,7 +35,7 @@ async def get_user_profile(user_id: str):
     
     return user
 
-@router.put("/api/v1/users/{user_id}")
+@router.put("/{user_id}")
 async def update_user_profile(
     user_id: str,
     nombre: str = Form(...),

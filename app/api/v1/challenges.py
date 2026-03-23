@@ -15,15 +15,18 @@ class ChallengeAnswer(BaseModel):
     question_index: int
     answer: str
 
-@router.post("/api/v1/challenges/queue", status_code=200)
-async def enter_queue(current_user: dict = Depends(_student_guard)):
+class QueueRequest(BaseModel):
+    room_code: str = None
+
+@router.post("/queue", status_code=200)
+async def enter_queue(payload: QueueRequest, current_user: dict = Depends(_student_guard)):
     """
     Encola al estudiante o le devuelve su partida activa si ya la tiene.
     """
-    return await challenges_service.enter_queue(current_user["user_id"])
+    return await challenges_service.enter_queue(current_user["user_id"], payload.room_code)
 
 
-@router.get("/api/v1/challenges/current", status_code=200)
+@router.get("/current", status_code=200)
 async def get_current_status(current_user: dict = Depends(_student_guard)):
     """
     Retorna el estado actual del jugador (esperando, partida, scores).
@@ -35,7 +38,7 @@ async def get_current_status(current_user: dict = Depends(_student_guard)):
     return status
 
 
-@router.post("/api/v1/challenges/{match_id}/answer", status_code=200)
+@router.post("/{match_id}/answer", status_code=200)
 async def submit_answer(
     match_id: str,
     payload: ChallengeAnswer,
@@ -54,7 +57,7 @@ async def submit_answer(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("/api/v1/challenges/current", status_code=200)
+@router.delete("/current", status_code=200)
 async def leave_match(current_user: dict = Depends(_student_guard)):
     """
     Abandona la cola o la partida activa.

@@ -5,36 +5,30 @@ import os
 
 from app.api.v1 import auth, classes, users, challenges, students, trajectory, admin_students, courses, teachers
 
-app = FastAPI(title="API de MathBoost")
+app = FastAPI(title="API de MathBoost", strict_slashes=False)
 
 # --- GUARDIA DE SEGURIDAD (CORS) ---
-# Esto le dice a FastAPI: "Permite que el frontend se conecte conmigo"
-
-origins = [
-    "https://frontend-proyecto-integrador-nine.vercel.app",  # URL de producción
-    "http://localhost:3000",          # Para seguir probando local
-]
+# Permitimos TODO temporalmente para depurar y asegurar conectividad
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      # El asterisco permite CUALQUIER origen
-    allow_credentials=False,  # DEBE ser False cuando usamos el asterisco "*"
-    allow_methods=["*"],      # Permite POST, GET, etc.
-    allow_headers=["*"],      # Permite cualquier encabezado
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
-
 
 # Montar carpeta uploads
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# Rutas
-app.include_router(auth.router, tags=["Auth"])
-app.include_router(classes.router, tags=["Classes"])
-app.include_router(users.router, tags=["Users"])
-app.include_router(challenges.router, tags=["Challenges"])
-app.include_router(students.router, tags=["Students"])
-app.include_router(trajectory.router, tags=["Trajectory"])
-app.include_router(admin_students.router, tags=["Admin - Students"])
-app.include_router(courses.router, tags=["Courses"])
-app.include_router(teachers.router, tags=["Teachers"])
+# Rutas con prefijos consistentes
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
+app.include_router(auth.admin_router, prefix="/api/v1/admin", tags=["Admin"])
+app.include_router(classes.router, prefix="/api/v1/classes", tags=["Classes"])
+app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
+app.include_router(challenges.router, prefix="/api/v1/challenges", tags=["Challenges"])
+app.include_router(students.router, prefix="/api/v1/students", tags=["Students"])
+app.include_router(trajectory.router, prefix="/api/v1/trajectory", tags=["Trajectory"])
+app.include_router(admin_students.router, prefix="/api/v1/admin/students", tags=["Admin - Students"])
+app.include_router(courses.router, prefix="/api/v1/courses", tags=["Courses"])
+app.include_router(teachers.router, prefix="/api/v1/teachers", tags=["Teachers"])

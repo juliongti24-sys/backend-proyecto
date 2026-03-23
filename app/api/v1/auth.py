@@ -4,11 +4,12 @@ from bson import ObjectId
 from app.database import db
 from app.models.users import StudentCreate, UserLogin, TeacherCreate, TeacherUpdate
 router = APIRouter()
+admin_router = APIRouter()
 
 # Configuración para encriptar contraseñas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-@router.post("/api/v1/auth/register/student", status_code=status.HTTP_201_CREATED)
+@router.post("/register/student", status_code=status.HTTP_201_CREATED)
 async def register_student(student: StudentCreate):
     # 1. Verificar si el correo o matrícula ya existen en la base de datos
     existing_user = await db.users.find_one({
@@ -36,7 +37,7 @@ async def register_student(student: StudentCreate):
 
     return {"message": "Estudiante registrado exitosamente"}
 
-@router.post("/api/v1/auth/login", status_code=status.HTTP_200_OK)
+@router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(credentials: UserLogin):
     # 1. Buscar al usuario por su correo en MongoDB
     user = await db.users.find_one({"correo": credentials.correo})
@@ -70,7 +71,7 @@ async def login_user(credentials: UserLogin):
         }
     }
 
-@router.post("/api/v1/admin/register/teacher", status_code=status.HTTP_201_CREATED)
+@admin_router.post("/register/teacher", status_code=status.HTTP_201_CREATED)
 async def register_teacher(teacher: TeacherCreate):
     # 1. Verificar si el correo o num_empleado ya existen
     existing_user = await db.users.find_one({
@@ -99,7 +100,7 @@ async def register_teacher(teacher: TeacherCreate):
     return {"message": "Maestro registrado exitosamente por el administrador."}
 
 
-@router.get("/api/v1/admin/teachers")
+@admin_router.get("/teachers")
 async def get_teachers():
     # 1. Buscar todos los usuarios que tengan el rol "maestro"
     cursor = db.users.find({"rol": "maestro"})
@@ -113,7 +114,7 @@ async def get_teachers():
 
 
 # ── Editar maestro ──
-@router.put("/api/v1/admin/teachers/{teacher_id}")
+@admin_router.put("/teachers/{teacher_id}")
 async def update_teacher(teacher_id: str, teacher: TeacherUpdate):
     # 1. Convertir el string a ObjectId de MongoDB
     try:
@@ -139,7 +140,7 @@ async def update_teacher(teacher_id: str, teacher: TeacherUpdate):
 
 
 # ── Eliminar maestro ──
-@router.delete("/api/v1/admin/teachers/{teacher_id}")
+@admin_router.delete("/teachers/{teacher_id}")
 async def delete_teacher(teacher_id: str):
     # 1. Convertir el string a ObjectId de MongoDB
     try:

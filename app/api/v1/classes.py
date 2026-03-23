@@ -11,7 +11,7 @@ def generate_access_code(length=6):
     characters = string.ascii_uppercase + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
-@router.post("/api/v1/teacher/classes", status_code=status.HTTP_201_CREATED)
+@router.post("/teacher", status_code=status.HTTP_201_CREATED)
 async def create_class(class_data: ClassCreate):
     # Generar código único
     codigo = generate_access_code()
@@ -36,7 +36,7 @@ async def create_class(class_data: ClassCreate):
     return created_class
 
 
-@router.get("/api/v1/teacher/classes/{maestro_id}")
+@router.get("/teacher/{maestro_id}")
 async def get_teacher_classes(maestro_id: str):
     cursor = db.classes.find({"maestro_id": maestro_id})
     clases = await cursor.to_list(length=100)
@@ -52,7 +52,7 @@ class JoinClassRequest(BaseModel):
     estudiante_id: str
     codigo_acceso: str
 
-@router.post("/api/v1/student/classes/join", status_code=status.HTTP_200_OK)
+@router.post("/join", status_code=status.HTTP_200_OK)
 async def join_class(data: JoinClassRequest):
     # Buscar la clase por código
     clase = await db.classes.find_one({"codigo_acceso": data.codigo_acceso})
@@ -79,7 +79,7 @@ async def join_class(data: JoinClassRequest):
     return {"message": "Te has unido a la clase exitosamente."}
 
 
-@router.get("/api/v1/student/classes/{estudiante_id}")
+@router.get("/student/{estudiante_id}")
 async def get_student_classes(estudiante_id: str):
     # Buscar todas las clases donde el ID del estudiante esté en el arreglo 'estudiantes'
     cursor = db.classes.find({"estudiantes": estudiante_id})
@@ -93,7 +93,7 @@ async def get_student_classes(estudiante_id: str):
 
 from bson import ObjectId
 
-@router.get("/api/v1/classes/{class_id}")
+@router.get("/{class_id}")
 async def get_class_info(class_id: str):
     try:
         # Convert string to ObjectId
